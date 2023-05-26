@@ -1,57 +1,92 @@
 
-import {Link} from "react-router-dom"
+import axios from "axios"
+import { useEffect } from "react"
+import { useState } from "react"
+import { Link, useParams } from "react-router-dom"
 import styled from "styled-components"
-export default function SeatsPage({ FooterDetails }) {
-   
+
+
+function Assento(props) {
+    const assento = props.assento
+    const isAvaible = props.avaible
+    const id = props.id
+    const assentosSelecionados = props.assentosSelecionados
+    const selecionarAssentos = props.selecionarAssentos
+    const [selecionado, setSelecionado] = useState("#808F9D")
+    if (isAvaible) {
         return (
-            <PageContainer>
-                Selecione o(s) assento(s)
-
-                <SeatsContainer>
-                    <SeatItem>01</SeatItem>
-                    <SeatItem>02</SeatItem>
-                    <SeatItem>03</SeatItem>
-                    <SeatItem>04</SeatItem>
-                    <SeatItem>05</SeatItem>
-                </SeatsContainer>
-
-                <CaptionContainer>
-                    <CaptionItem>
-                        <CaptionCircle />
-                        Selecionado
-                    </CaptionItem>
-                    <CaptionItem>
-                        <CaptionCircle />
-                        Disponível
-                    </CaptionItem>
-                    <CaptionItem>
-                        <CaptionCircle />
-                        Indisponível
-                    </CaptionItem>
-                </CaptionContainer>
-
-                <FormContainer>
-                    Nome do Comprador:
-                    <input placeholder="Digite seu nome..." />
-
-                    CPF do Comprador:
-                    <input placeholder="Digite seu CPF..." />
-
-                    <button>Reservar Assento(s)</button>
-                </FormContainer>
-
-                <FooterContainer>
-                    <div>
-                        <img src={FooterDetails.posterURL} alt="poster" />
-                    </div>
-                    <div>
-                        <p>{FooterDetails.tile}</p>
-                        <p>Sexta - 14h00</p>
-                    </div>
-                </FooterContainer>
-
-            </PageContainer>
+            <SeatItem color={selecionado} onClick={() => { selecionarAssentos([...assentosSelecionados, id]); setSelecionado("#1AAE9E") }}>{assento}</SeatItem>
         )
+    } else {
+        return (
+            <SeatItem color={"#FBE192"}>{assento}</SeatItem>
+        )
+    }
+
+}
+
+
+export default function SeatsPage({footerDetails,escolha }) {
+    const [assentos, setAssentos] = useState([])
+    const [assentosSelecionados, selecionarAssentos] = useState([])
+    const params = useParams()
+    useEffect(() => {
+        const promessa = axios.get(`https://mock-api.driven.com.br/api/v8/cineflex/showtimes/${params.idSessao}/seats`)
+        promessa.then((assentos) => {
+        setAssentos(assentos.data.seats)
+        })
+    }, [])
+    console.log(footerDetails)
+    console.log(escolha)
+    return (
+        <PageContainer>
+            Selecione o(s) assento(s)
+
+            <SeatsContainer>
+                {assentos.map((assento) => {
+                    return (
+                        <Assento assentosSelecionados={assentosSelecionados} selecionarAssentos={selecionarAssentos} id={assento.id} key={assento.id} avaible={assento.isAvailable} assento={assento.name} />
+                    )
+                })}
+            </SeatsContainer>
+
+            <CaptionContainer>
+                <CaptionItem>
+                    <CaptionCircle color={"#1AAE9E"} />
+                    Selecionado
+                </CaptionItem>
+                <CaptionItem>
+                    <CaptionCircle color={"#C3CFD9"} />
+                    Disponível
+                </CaptionItem>
+                <CaptionItem>
+                    <CaptionCircle color={"#FBE192"} />
+                    Indisponível
+                </CaptionItem>
+            </CaptionContainer>
+
+            <FormContainer>
+                <label htmlFor="name" >Nome do Comprador:</label>
+                <Input id="name" name="name"  placeholder="Digite seu nome..." />
+
+                <label htmlFor="cpf" >CPF do Comprador:</label>
+                <Input id="cpf" name="cpf" placeholder="Digite seu CPF..." />
+
+                <Button>Reservar Assento(s)</Button>
+            </FormContainer>
+
+            <FooterContainer>
+                <div>
+                    <img src={footerDetails.posterURL} alt="poster" />
+                </div>
+                <div>
+                    <p>{footerDetails.title}</p>
+                    <p>{escolha.dia + " - " + escolha.horario}</p>
+                </div>
+            </FooterContainer>
+
+        </PageContainer>
+    )
 
 }
 
@@ -67,7 +102,7 @@ const PageContainer = styled.div`
     padding-bottom: 120px;
     padding-top: 70px;
 `
-const SeatsContainer = styled.div`
+const SeatsContainer = styled.form`
     width: 330px;
     display: flex;
     flex-direction: row;
@@ -98,8 +133,8 @@ const CaptionContainer = styled.div`
     margin: 20px;
 `
 const CaptionCircle = styled.div`
-    border: 1px solid blue;         // Essa cor deve mudar
-    background-color: lightblue;    // Essa cor deve mudar
+    border: 1px solid ${props => props.color};      
+    background-color: ${props => props.color};    
     height: 25px;
     width: 25px;
     border-radius: 25px;
@@ -115,8 +150,8 @@ const CaptionItem = styled.div`
     font-size: 12px;
 `
 const SeatItem = styled.div`
-    border: 1px solid blue;         // Essa cor deve mudar
-    background-color: lightblue;    // Essa cor deve mudar
+    border: 1px solid ${(props) => props.color};      
+    background-color: ${(props) => props.color};    
     height: 25px;
     width: 25px;
     border-radius: 25px;
@@ -164,4 +199,22 @@ const FooterContainer = styled.div`
             }
         }
     }
+`
+const Button = styled.button`
+    background: #E8833A;
+    border-radius: 3px;
+    width:225px;
+    height:42px;
+    border:none;
+    margin-top:20px;
+    color: #FFFFFF;
+    font-family: "Roboto";
+    font-size:18px;
+`
+
+const Input = styled.input`
+    border: 1px solid #D5D5D5;
+    border-radius:3px;
+    width:327px;
+    height:51px;
 `

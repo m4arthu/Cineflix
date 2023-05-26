@@ -10,7 +10,8 @@ import axios from "axios"
 export default function App() {
     axios.defaults.headers.common['Authorization'] = 'fiOPbqtwKv2g3xIYDfnGiDIn';
     const [filmes,setFilmes] = useState([])
-    const [FooterDetails, setFooterDetails] = useState({})
+    const [footerDetails, setFooterDetails] = useState({})
+    const [escolha,setEscolha] = useState({})
     useEffect(()=>{
       const promise =  axios.get("https://mock-api.driven.com.br/api/v8/cineflex/movies") 
       promise.then((resposta)=>{
@@ -29,8 +30,8 @@ export default function App() {
                 <NavContainer>CINEFLEX</NavContainer>
                 <Routes>
                     <Route path="/"  element={<HomePage filmes={filmes}/>}></Route>
-                    <Route path="/sessoes/:idFilme" element={<SessionsPage FooterDetails={FooterDetails}  setFooterDetails={setFooterDetails}/>}></Route>
-                    <Route path="/assentos/:idSessao" element={<SeatsPage FooterDetails={FooterDetails} />}></Route>
+                    <Route path="/sessoes/:idFilme" element={<SessionsPage escolha={escolha}  setEscolha={setEscolha}  footerDetails={footerDetails} setfooterDetails={setFooterDetails} />}></Route>
+                    <Route path="/assentos/:idSessao" element={<SeatsPage escolha={escolha} footerDetails={footerDetails} />}></Route>
                     <Route path="/sucesso" element={<SuccessPage/>}></Route>
                 </Routes>
             </BrowserRouter>

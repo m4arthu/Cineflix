@@ -4,19 +4,19 @@ import { Link, useParams } from "react-router-dom"
 import styled from "styled-components"
 
 
-function Times({ time }) {
+function Times({ time,FooterDetails,setFooterDetails }) {
     return (
         <button>{time}</button>
     )
 }
-function Session({ dataDia }) {
+function Session({ dataDia,setEscolha }) {
     return (
         <SessionContainer>
             {dataDia.weekday} - {dataDia.date}
             <ButtonsContainer>
                 {dataDia.showtimes.map((time) => {
                     return (
-                        <Link key={time.id} to={`/assentos/${time.id}`}>
+                        <Link onClick={()=>{setEscolha({dia:dataDia.weekday,horario:time.name})}} key={time.id}  to={`/assentos/${time.id}`}>
                             <Times  time={time.name} />
                         </Link>
                     )
@@ -27,7 +27,7 @@ function Session({ dataDia }) {
     )
 }
 
-export default function SessionsPage({FooterDetails,setFooterDetails}) {
+export default function SessionsPage({footerDetails, setfooterDetails, setEscolha}) {
     const params = useParams()
     const [Filme, setFilme] = useState([])
     
@@ -35,42 +35,38 @@ export default function SessionsPage({FooterDetails,setFooterDetails}) {
         const promise = axios.get(`https://mock-api.driven.com.br/api/v8/cineflex/movies/${params.idFilme}/showtimes`)
         promise.then((resposta) => {
             setFilme(resposta.data.days)
-            setFooterDetails(resposta.data)
+            setfooterDetails(resposta.data)
         })
     }, [])
 
-    if (Filme !== []) {
+
+   
         return (
             <PageContainer>
                 Selecione o horário
                 <div>
                     {Filme.map((dia) => {
                         return (
-                            <Session key={dia.id} dataDia={dia} />
+                            <Session setEscolha={setEscolha}   key={dia.id} dataDia={dia} />
                         )
                     })}
                 </div>
 
                 <FooterContainer>
                     <div>
-                        <img src={FooterDetails.posterURL} alt="poster" />
+                        <img src={footerDetails.posterURL} alt="poster" />
                     </div>
                     <div>
-                        <p>{FooterDetails.title}</p>
+                        <p>{footerDetails.title}</p>
                     </div>
                 </FooterContainer>
 
             </PageContainer>
         )
-    } else {
-        return (
-            <>
-                carregando......
-            </>
-        )
+
+   
     }
 
-}
 
 const PageContainer = styled.div`
     display: flex;
