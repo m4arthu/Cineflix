@@ -2,7 +2,7 @@
 import axios from "axios"
 import { useEffect } from "react"
 import { useState } from "react"
-import { Link, useParams } from "react-router-dom"
+import { Link, useNavigate, useParams } from "react-router-dom"
 import styled from "styled-components"
 
 
@@ -13,31 +13,71 @@ function Assento(props) {
     const assentosSelecionados = props.assentosSelecionados
     const selecionarAssentos = props.selecionarAssentos
     const [selecionado, setSelecionado] = useState("#808F9D")
+    console.log(assentosSelecionados,props.assentos)
     if (isAvaible) {
         return (
-            <SeatItem color={selecionado} onClick={() => { selecionarAssentos([...assentosSelecionados, id]); setSelecionado("#1AAE9E") }}>{assento}</SeatItem>
+            <SeatItem color={selecionado} onClick={() => {
+                if (selecionado === "#1AAE9E") {
+                    if(props.assentos.length === 1){
+                        props.setAssentos([]);
+                        selecionarAssentos([])
+                    } else {    
+                        props.setAssentos([...props.assentos.splice(props.assentos.indexOf(assento))]);
+                        selecionarAssentos([...assentosSelecionados.splice(assentosSelecionados.indexOf(id))]);
+                    }
+                    setSelecionado("#808F9D")
+                } else {
+                    props.setAssentos([...props.assentos, assento]);
+                    selecionarAssentos([...assentosSelecionados, id]);
+                    setSelecionado("#1AAE9E")
+                }
+            }}>{assento}</SeatItem>
         )
     } else {
         return (
-            <SeatItem color={"#FBE192"}>{assento}</SeatItem>
+            <SeatItem onClick={() => {
+                alert("Esse assento não está disponível")
+            }} color={"#FBE192"}>{assento}</SeatItem>
         )
     }
 
 }
 
 
-export default function SeatsPage({footerDetails,escolha }) {
+export default function SeatsPage({ footerDetails, escolha, setDados, Assentos, SetAssentos }) {
     const [assentos, setAssentos] = useState([])
     const [assentosSelecionados, selecionarAssentos] = useState([])
+    const [name, setName] = useState("")
+    const [cpf, setCpf] = useState("")
     const params = useParams()
+    const navigate = useNavigate()
+    function enviarDados(event) {
+        if (assentosSelecionados.length === 0) {
+            alert("esqueceu  de selecionar o(s) assento(s) siou !!")
+        } else {
+            const promise = axios.post("https://mock-api.driven.com.br/api/v8/cineflex/seats/book-many",
+                {
+                    ids: assentosSelecionados,
+                    name: name,
+                    cpf: cpf
+                })
+            promise.then(() => {
+                setDados({ aseentos: assentosSelecionados, nome: name, cpf: cpf, footerDetails: footerDetails, sessao: escolha })
+                navigate("/sucesso")
+            })
+        }
+        event.preventDefault()
+
+    }
+
+
+
     useEffect(() => {
         const promessa = axios.get(`https://mock-api.driven.com.br/api/v8/cineflex/showtimes/${params.idSessao}/seats`)
         promessa.then((assentos) => {
-        setAssentos(assentos.data.seats)
+            setAssentos(assentos.data.seats)
         })
     }, [])
-    console.log(footerDetails)
-    console.log(escolha)
     return (
         <PageContainer>
             Selecione o(s) assento(s)
@@ -45,7 +85,7 @@ export default function SeatsPage({footerDetails,escolha }) {
             <SeatsContainer>
                 {assentos.map((assento) => {
                     return (
-                        <Assento assentosSelecionados={assentosSelecionados} selecionarAssentos={selecionarAssentos} id={assento.id} key={assento.id} avaible={assento.isAvailable} assento={assento.name} />
+                        <Assento assentos={Assentos} setAssentos={SetAssentos} assentosSelecionados={assentosSelecionados} selecionarAssentos={selecionarAssentos} id={assento.id} key={assento.id} avaible={assento.isAvailable} assento={assento.name} />
                     )
                 })}
             </SeatsContainer>
@@ -65,14 +105,18 @@ export default function SeatsPage({footerDetails,escolha }) {
                 </CaptionItem>
             </CaptionContainer>
 
-            <FormContainer>
+            <FormContainer onSubmit={enviarDados}>
                 <label htmlFor="name" >Nome do Comprador:</label>
-                <Input id="name" name="name"  placeholder="Digite seu nome..." />
+                <Input required onChange={(e) => {
+                    setName(e.target.value)
+                }} id="name" name="name" placeholder="Digite seu nome..." />
 
                 <label htmlFor="cpf" >CPF do Comprador:</label>
-                <Input id="cpf" name="cpf" placeholder="Digite seu CPF..." />
+                <Input required type="number" onChange={(e) => {
+                    setCpf(e.target.value)
+                }} id="cpf" name="cpf" placeholder="Digite seu CPF..." />
 
-                <Button>Reservar Assento(s)</Button>
+                <input id="submit" type="submit" name="submit" />
             </FormContainer>
 
             <FooterContainer>
@@ -102,7 +146,7 @@ const PageContainer = styled.div`
     padding-bottom: 120px;
     padding-top: 70px;
 `
-const SeatsContainer = styled.form`
+const SeatsContainer = styled.div`
     width: 330px;
     display: flex;
     flex-direction: row;
@@ -111,15 +155,24 @@ const SeatsContainer = styled.form`
     justify-content: center;
     margin-top: 20px;
 `
-const FormContainer = styled.div`
+const FormContainer = styled.form`
     width: calc(100vw - 40px); 
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     margin: 20px 0;
     font-size: 18px;
-    button {
+    #submit {
         align-self: center;
+        background: #E8833A;
+        border-radius: 3px;
+        width:225px;
+        height:42px;
+        border:none;
+        margin-top:20px;
+        color: #FFFFFF;
+        font-family: "Roboto";
+        font-size:18px;
     }
     input {
         width: calc(100vw - 60px);
@@ -200,17 +253,7 @@ const FooterContainer = styled.div`
         }
     }
 `
-const Button = styled.button`
-    background: #E8833A;
-    border-radius: 3px;
-    width:225px;
-    height:42px;
-    border:none;
-    margin-top:20px;
-    color: #FFFFFF;
-    font-family: "Roboto";
-    font-size:18px;
-`
+
 
 const Input = styled.input`
     border: 1px solid #D5D5D5;

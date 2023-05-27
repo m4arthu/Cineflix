@@ -12,6 +12,8 @@ export default function App() {
     const [filmes,setFilmes] = useState([])
     const [footerDetails, setFooterDetails] = useState({})
     const [escolha,setEscolha] = useState({})
+    const [dados,setDados] = useState({})
+    const [Assentos,SetAssentos] = useState([])
     useEffect(()=>{
       const promise =  axios.get("https://mock-api.driven.com.br/api/v8/cineflex/movies") 
       promise.then((resposta)=>{
@@ -31,8 +33,8 @@ export default function App() {
                 <Routes>
                     <Route path="/"  element={<HomePage filmes={filmes}/>}></Route>
                     <Route path="/sessoes/:idFilme" element={<SessionsPage escolha={escolha}  setEscolha={setEscolha}  footerDetails={footerDetails} setfooterDetails={setFooterDetails} />}></Route>
-                    <Route path="/assentos/:idSessao" element={<SeatsPage escolha={escolha} footerDetails={footerDetails} />}></Route>
-                    <Route path="/sucesso" element={<SuccessPage/>}></Route>
+                    <Route path="/assentos/:idSessao" element={<SeatsPage setDados={setDados} Assentos={Assentos} SetAssentos={SetAssentos} escolha={escolha} footerDetails={footerDetails} />}></Route>
+                    <Route path="/sucesso" element={<SuccessPage assentos={Assentos} dados={dados}/>}></Route>
                 </Routes>
             </BrowserRouter>
         )

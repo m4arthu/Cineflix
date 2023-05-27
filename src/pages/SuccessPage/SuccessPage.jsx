@@ -1,34 +1,62 @@
 import styled from "styled-components"
+import { Link } from "react-router-dom"
+import moment from "moment/moment"
 
-export default function SuccessPage() {
 
+function Assento({ assento }) {
+    return (
+        <p>Assento {assento}</p>
+    )
+}
+
+export default function SuccessPage({ dados, assentos }) {
+   let  data = moment(dados.footerDetails.releaseDate).utc().format('MM/DD/YYYY')
+   let time = new Date(data).toLocaleTimeString()
     return (
         <PageContainer>
             <h1>Pedido feito <br /> com sucesso!</h1>
 
             <TextContainer>
                 <strong><p>Filme e sessão</p></strong>
-                <p>Tudo em todo lugar ao mesmo tempo</p>
-                <p>03/03/2023 - 14:00</p>
+                <p>{dados.footerDetails.title}</p>
+                <p>{data + "   " + time}</p>
             </TextContainer>
 
             <TextContainer>
                 <strong><p>Ingressos</p></strong>
-                <p>Assento 01</p>
-                <p>Assento 02</p>
-                <p>Assento 03</p>
+                {assentos.map((assento) => {
+                    return (
+                        <Assento key={assentos.indexOf(assento)} assento={assento}></Assento>
+                    )
+                })}
             </TextContainer>
 
             <TextContainer>
                 <strong><p>Comprador</p></strong>
-                <p>Nome: Letícia Chijo</p>
-                <p>CPF: 123.456.789-10</p>
+                <p>{dados.nome}</p>
+                <p>{dados.cpf}</p>
             </TextContainer>
 
-            <button>Voltar para Home</button>
+            <Link to={"/"}><Button>Voltar para Home</Button></Link>
         </PageContainer>
     )
 }
+
+
+const Button = styled.button`
+
+font-family: 'Roboto';
+font-weight: 400;
+font-size: 18px;
+align-items: center;
+text-align: center;
+width: 225px;
+height: 42px;
+background: #E8833A;
+border-radius: 3px;
+border:none;
+color:white;
+`
 
 const PageContainer = styled.div`
     display: flex;
