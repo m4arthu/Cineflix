@@ -4,14 +4,14 @@ import { Link, useParams } from "react-router-dom"
 import styled from "styled-components"
 
 
-function Times({ time,FooterDetails,setFooterDetails }) {
+function Times({ time }) {
     return (
-        <button>{time}</button>
+        <button data-test="showtime">{time}</button>
     )
 }
 function Session({ dataDia,setEscolha }) {
     return (
-        <SessionContainer>
+        <SessionContainer data-test="movie-day">
             {dataDia.weekday} - {dataDia.date}
             <ButtonsContainer>
                 {dataDia.showtimes.map((time) => {
@@ -52,7 +52,7 @@ export default function SessionsPage({footerDetails, setfooterDetails, setEscolh
                     })}
                 </div>
 
-                <FooterContainer>
+                <FooterContainer data-test="footer">
                     <div>
                         <img src={footerDetails.posterURL} alt="poster" />
                     </div>

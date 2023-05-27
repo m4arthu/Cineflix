@@ -4,7 +4,7 @@ import styled from "styled-components"
 function Movie({ filmeSrc,filmeId }) {
     return (
         <Link to={`/sessoes/${filmeId}`}>
-            <MovieContainer>
+            <MovieContainer data-test="movie">
                 <img src={filmeSrc} alt="poster" />
             </MovieContainer>
         </Link>

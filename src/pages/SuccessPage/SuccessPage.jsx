@@ -16,13 +16,13 @@ export default function SuccessPage({ dados, assentos }) {
         <PageContainer>
             <h1>Pedido feito <br /> com sucesso!</h1>
 
-            <TextContainer>
+            <TextContainer data-test="movie-info">
                 <strong><p>Filme e sessão</p></strong>
                 <p>{dados.footerDetails.title}</p>
                 <p>{data + "   " + time}</p>
             </TextContainer>
 
-            <TextContainer>
+            <TextContainer data-test="seats-info">
                 <strong><p>Ingressos</p></strong>
                 {assentos.map((assento) => {
                     return (
@@ -31,13 +31,13 @@ export default function SuccessPage({ dados, assentos }) {
                 })}
             </TextContainer>
 
-            <TextContainer>
+            <TextContainer data-test="client-info">
                 <strong><p>Comprador</p></strong>
                 <p>{dados.nome}</p>
                 <p>{dados.cpf}</p>
             </TextContainer>
 
-            <Link to={"/"}><Button>Voltar para Home</Button></Link>
+            <Link to={"/"}><Button data-test="go-home-btn">Voltar para Home</Button></Link>
         </PageContainer>
     )
 }

@@ -16,7 +16,7 @@ function Assento(props) {
     console.log(assentosSelecionados,props.assentos)
     if (isAvaible) {
         return (
-            <SeatItem color={selecionado} onClick={() => {
+            <SeatItem data-test="seat" color={selecionado} onClick={() => {
                 if (selecionado === "#1AAE9E") {
                     if(props.assentos.length === 1){
                         props.setAssentos([]);
@@ -35,7 +35,7 @@ function Assento(props) {
         )
     } else {
         return (
-            <SeatItem onClick={() => {
+            <SeatItem data-test="seat" onClick={() => {
                 alert("Esse assento não está disponível")
             }} color={"#FBE192"}>{assento}</SeatItem>
         )
@@ -107,19 +107,19 @@ export default function SeatsPage({ footerDetails, escolha, setDados, Assentos, 
 
             <FormContainer onSubmit={enviarDados}>
                 <label htmlFor="name" >Nome do Comprador:</label>
-                <Input required onChange={(e) => {
+                <Input data-test="client-name" required onChange={(e) => {
                     setName(e.target.value)
                 }} id="name" name="name" placeholder="Digite seu nome..." />
 
                 <label htmlFor="cpf" >CPF do Comprador:</label>
-                <Input required type="number" onChange={(e) => {
+                <Input data-test="client-cpf"  required type="number" onChange={(e) => {
                     setCpf(e.target.value)
                 }} id="cpf" name="cpf" placeholder="Digite seu CPF..." />
 
-                <input id="submit" type="submit" name="submit" />
+                <input data-test="book-seat-btn" id="submit" type="submit" name="submit" />
             </FormContainer>
 
-            <FooterContainer>
+            <FooterContainer data-test="footer">
                 <div>
                     <img src={footerDetails.posterURL} alt="poster" />
                 </div>
