@@ -13,7 +13,6 @@ function Assento(props) {
     const assentosSelecionados = props.assentosSelecionados
     const selecionarAssentos = props.selecionarAssentos
     const [selecionado, setSelecionado] = useState("#808F9D")
-    console.log(assentosSelecionados,props.assentos)
     if (isAvaible) {
         return (
             <SeatItem data-test="seat" color={selecionado} onClick={() => {
@@ -70,6 +69,20 @@ export default function SeatsPage({ footerDetails, escolha, setDados, Assentos, 
 
     }
 
+    function formatarNome(elemento,nome){
+       const nomeFormatado = nome.replace(/[0-9]/g, "")
+        elemento.value = nomeFormatado
+        console.log(nomeFormatado)
+        setName(nomeFormatado)
+    }
+
+    function formatarcpf(elemnto,cpf){
+       const cpfformatado = cpf.replace(/([A-z]{0,11})/g, "") 
+        elemnto.value = cpfformatado
+        console.log(cpfformatado)
+        setCpf(cpfformatado)
+    }
+
 
 
     useEffect(() => {
@@ -108,12 +121,12 @@ export default function SeatsPage({ footerDetails, escolha, setDados, Assentos, 
             <FormContainer onSubmit={enviarDados}>
                 <label htmlFor="name" >Nome do Comprador:</label>
                 <Input data-test="client-name" required onChange={(e) => {
-                    setName(e.target.value)
+                   formatarNome(e.target,e.target.value)
                 }} id="name" name="name" placeholder="Digite seu nome..." />
 
                 <label htmlFor="cpf" >CPF do Comprador:</label>
-                <Input data-test="client-cpf"  required type="number" onChange={(e) => {
-                    setCpf(e.target.value)
+                <Input data-test="client-cpf"  required type="text" onChange={(e) => {
+                    formatarcpf(e.target, e.target.value)
                 }} id="cpf" name="cpf" placeholder="Digite seu CPF..." />
 
                 <input data-test="book-seat-btn" id="submit" type="submit" name="submit" />
